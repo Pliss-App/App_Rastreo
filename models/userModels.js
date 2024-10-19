@@ -13,6 +13,33 @@ const getUserDpi = (_valor) => { //getByEmail
     });
 };
 
+const getUserByDpi = (_valor) => { //getByEmail
+    return new Promise((resolve, reject) => {
+        connection.query(
+            "SELECT * FROM users WHERE dpi = ?", [_valor], (err, rows) => {
+                if (err) {
+                    console.error('Error getting record:', err); // Registro del error en el servidor
+                    return reject(new Error('Error getting record')); // Rechazo con un mensaje de error personalizado
+                }
+                resolve(rows[0]);
+            });
+    });
+};
+
+const getUserByemail = (_valor) => { //getByEmail
+    return new Promise((resolve, reject) => {
+        connection.query(
+            "SELECT * FROM users WHERE email = ?", [_valor], (err, rows) => {
+                if (err) {
+                    console.error('Error getting record:', err); // Registro del error en el servidor
+                    return reject(new Error('Error getting record')); // Rechazo con un mensaje de error personalizado
+                }
+                resolve(rows[0]);
+            });
+    });
+};
+
+
 
 const getAllUser = (_limit, _offset) => { //getByEmail
     return new Promise((resolve, reject) => {
@@ -101,5 +128,7 @@ module.exports = {
     getCountUser,
     createUser,
     getUserDpi,
-    addPermission
+    addPermission,
+    getUserByDpi,
+    getUserByemail
 }

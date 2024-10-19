@@ -114,4 +114,44 @@ isRouter.get('/all', async (req, res) => {
   }
 })
 
+
+isRouter.get('/validate-dpi', async (req, res) => {
+  try {
+   
+    const results = await isController.getUserByDpi(req.query.valor);
+    if (results === undefined) {
+      res.json({
+         result: 'DPI, No existe cuenta'
+      })
+    } else {
+        return res.status(200).json({
+          result: 'DPI, se encuentra asociada a una cuenta Activa'
+        });
+    }
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error al obtener datos' });
+  }
+})
+
+isRouter.get('/validate-email', async (req, res) => {
+  try {
+    const results = await isController.getUserByemail(req.query.valor);
+    if (results === undefined) {
+      res.json({
+        error: 'EMAIL, No existe cuenta'
+      })
+    } else {
+        return res.status(200).json({
+          result: 'Email, se encuentra asociada a una cuenta Activa'
+        });
+    }
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error al obtener datos' });
+  }
+})
+
 module.exports = isRouter;
