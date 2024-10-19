@@ -13,6 +13,19 @@ const getUserDpi = (_valor) => { //getByEmail
     });
 };
 
+const getUserLogin = (_valor) => { //getByEmail
+    return new Promise((resolve, reject) => {
+        connection.query(
+            "SELECT u.id as idUser, p.id as idPermission,  p.nombre_permiso as rol, u.name, u.last_name, u.password, u.dpi, u.email, u.phone, u.age, u.created_at FROM users u INNER JOIN user_permission up ON u.id = up.iduser INNER JOIN permission p  ON up.permission_id = p.id WHERE email = ? OR dpi = ?", [_valor, _valor], (err, rows) => {
+            if (err) {
+                console.error('Error getting record:', err); // Registro del error en el servidor
+                return reject(new Error('Error getting record')); // Rechazo con un mensaje de error personalizado
+            }
+            resolve(rows[0]);
+        });
+    });
+};
+
 const getUserByDpi = (_valor) => { //getByEmail
     return new Promise((resolve, reject) => {
         connection.query(
@@ -124,6 +137,7 @@ const updateDispositivo = (id, count) => { //getByEmail
     });
 };
 module.exports = {
+    getUserLogin,
     getAllUser,
     getCountUser,
     createUser,

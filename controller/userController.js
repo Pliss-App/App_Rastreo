@@ -50,14 +50,15 @@ isRouter.post('/login', async (req, res) => {
 
   const { user, password } = req.body;
 
-  const existingUser = await isController.getUserDpi(user);
+  const existingUser = await isController.getUserLogin(user);
+
   if (existingUser === undefined) {
     res.json('Error, No Existe usuario')
   } else {
     const equals = bcrypt.compareSync(password, existingUser.password);
     if (equals) {
       const token = jwt.sign({
-        idUser: existingUser.id, name: existingUser.name, last_name: existingUser.last_name, email: existingUser.email, dpi: existingUser.dpi, phone: existingUser.phone
+        idUser: existingUser.id, idpermission: existingUser.idPermission, rol:existingUser.rol, name: existingUser.name, last_name: existingUser.last_name, email: existingUser.email, dpi: existingUser.dpi, phone: existingUser.phone
       },
         'SECRETKEY', {
         expiresIn: '7h'
