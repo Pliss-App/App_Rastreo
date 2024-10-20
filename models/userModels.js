@@ -1,5 +1,6 @@
 const connection = require('../config/conexion');
 
+
 const getUserDpi = (_valor) => { //getByEmail
     return new Promise((resolve, reject) => {
         connection.query(
@@ -22,6 +23,32 @@ const getUserLogin = (_valor) => { //getByEmail
                 return reject(new Error('Error getting record')); // Rechazo con un mensaje de error personalizado
             }
             resolve(rows[0]);
+        });
+    });
+};
+
+const getUserById = (_id) => { //getByEmail
+    return new Promise((resolve, reject) => {
+        connection.query(
+            "SELECT u.id as idUser, p.id as idPermission,  p.nombre_permiso as rol, u.name, u.last_name, u.password, u.dpi, u.email, u.phone, u.age, u.created_at FROM users u INNER JOIN user_permission up ON u.id = up.iduser INNER JOIN permission p  ON up.permission_id = p.id WHERE u.id=?", [_id], (err, rows) => {
+            if (err) {
+                console.error('Error getting record:', err); // Registro del error en el servidor
+                return reject(new Error('Error getting record')); // Rechazo con un mensaje de error personalizado
+            }
+            resolve(rows[0]);
+        });
+    });
+};
+
+const getPermission = () => { //getByEmail
+    return new Promise((resolve, reject) => {
+        connection.query(
+            "SELECT id , nombre_permiso as rol FROM permission WHERE 1", (err, rows) => {
+            if (err) {
+                console.error('Error getting record:', err); // Registro del error en el servidor
+                return reject(new Error('Error getting record')); // Rechazo con un mensaje de error personalizado
+            }
+            resolve(rows);
         });
     });
 };
@@ -144,5 +171,7 @@ module.exports = {
     getUserDpi,
     addPermission,
     getUserByDpi,
-    getUserByemail
+    getUserByemail,
+    getUserById,
+    getPermission
 }

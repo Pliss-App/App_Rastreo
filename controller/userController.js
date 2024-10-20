@@ -1,8 +1,10 @@
 const express = require('express');
+require('dotenv').config();
+
 const fs = require('fs');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-
+const authMiddleware = require('../middlewares/authMiddleware');
 const isRouter = express.Router();
 
 const isController = require('../models/userModels');
@@ -46,6 +48,7 @@ isRouter.post('/register', async (req, res) => {
   }
 })
 
+
 isRouter.post('/login', async (req, res) => {
 
   const { user, password } = req.body;
@@ -57,10 +60,12 @@ isRouter.post('/login', async (req, res) => {
   } else {
     const equals = bcrypt.compareSync(password, existingUser.password);
     if (equals) {
+
+
       const token = jwt.sign({
-        idUser: existingUser.id, idpermission: existingUser.idPermission, rol:existingUser.rol, name: existingUser.name, last_name: existingUser.last_name, email: existingUser.email, dpi: existingUser.dpi, phone: existingUser.phone
+        idUser: existingUser.id, idpermission: existingUser.idPermission, rol: existingUser.rol, name: existingUser.name, last_name: existingUser.last_name, email: existingUser.email, dpi: existingUser.dpi, phone: existingUser.phone
       },
-        'SECRETKEY', {
+        process.env.JWT_SECRET, {
         expiresIn: '7h'
       }
       );
@@ -77,7 +82,7 @@ isRouter.post('/login', async (req, res) => {
   }
 })
 
-isRouter.get('/all', async (req, res) => {
+isRouter.get('/all', authMiddleware.protect, async (req, res) => {
   try {
 
     const _page = parseInt(req.query.page) || 1; // Página solicitada
@@ -118,21 +123,79 @@ isRouter.get('/all', async (req, res) => {
 
 isRouter.get('/validate-dpi', async (req, res) => {
   try {
-   
+
     const results = await isController.getUserByDpi(req.query.valor);
     if (results === undefined) {
       res.json({
-         result: 'DPI, No existe cuenta'
+        result: 'DPI, No existe cuenta'
       })
     } else {
-        return res.status(200).json({
-          result: 'DPI, se encuentra asociada a una cuenta Activa'
-        });
+      return res.status(200).json({
+        result: 'DPI, se encuentra asociada a una cuenta Activa'
+      });
     }
 
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Error al obtener datos' });
+  }
+})
+
+isRouter.get('/userById', authMiddleware.protect, async (req, res) => {
+  try {
+
+    const results = await isController.getUserById(req.query.id);
+    if (results === undefined) {
+      res.json({
+        error: 'No existe el registro!'
+      })
+    } else {
+      return res.status(200).json({
+        msg: 'Success',
+        result: results
+      });
+    }
+
+  } catch (error) {
+    console.error('Error the create account:', error); // Registro del error en el servidor
+    // Si el error es debido a la tabla no existente, capturarlo aquí ER_NON_UNIQ_ERROR
+    if (error.original && error.original.code === 'ER_NO_SUCH_TABLE') {
+      res.status(500).json({ error: 'La tabla "user" no existe en la base de datos.' });
+    } else if (error.original && error.original.code === 'ER_NON_UNIQ_ERROR') {
+      res.status(500).json({ error: 'Error table :  ER_NON_UNIQ_ERROR' });
+    } {
+      // Otros errores de base de datos
+      res.status(500).json({ error: 'Ocurrió un error al obtener los datos del usuario.' });
+    }
+  }
+})
+
+isRouter.get('/permission', authMiddleware.protect, async (req, res) => {
+  try {
+
+    const results = await isController.getPermission();
+    if (results === undefined) {
+      res.json({
+        error: 'Error, No existen registros!'
+      })
+    } else {
+      return res.status(200).json({
+        msg: 'Success',
+        result: results
+      });
+    }
+
+  } catch (error) {
+    console.error('Error the create account:', error); // Registro del error en el servidor
+    // Si el error es debido a la tabla no existente, capturarlo aquí ER_NON_UNIQ_ERROR
+    if (error.original && error.original.code === 'ER_NO_SUCH_TABLE') {
+      res.status(500).json({ error: 'La tabla "user" no existe en la base de datos.' });
+    } else if (error.original && error.original.code === 'ER_NON_UNIQ_ERROR') {
+      res.status(500).json({ error: 'Error table :  ER_NON_UNIQ_ERROR' });
+    } {
+      // Otros errores de base de datos
+      res.status(500).json({ error: 'Ocurrió un error al obtener los datos del usuario.' });
+    }
   }
 })
 
@@ -144,9 +207,9 @@ isRouter.get('/validate-email', async (req, res) => {
         error: 'EMAIL, No existe cuenta'
       })
     } else {
-        return res.status(200).json({
-          result: 'Email, se encuentra asociada a una cuenta Activa'
-        });
+      return res.status(200).json({
+        result: 'Email, se encuentra asociada a una cuenta Activa'
+      });
     }
 
   } catch (err) {
