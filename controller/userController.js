@@ -642,7 +642,7 @@ isRouter.post('/request-password-reset', async (req, res) => {
         });
 
         // Enviar el correo con el enlace de restablecimiento
-        const resetUrl = `${process.env.API_URL}/reset-password/${_resetToken}`;
+        const resetUrl = `https://darkcyan-gazelle-270531.hostingersite.com/reset-password/${_resetToken}`;
         const mailOptions = {
           from: process.env.GMAIL_USER,
           to: email,
