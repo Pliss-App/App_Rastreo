@@ -1,6 +1,7 @@
 // Imports
 require('dotenv').config();
 const express = require("express");
+const timeout = require('connect-timeout');
 //const connection = require('./mysql');
 const multer = require('multer')
 const fs = require('fs')
@@ -12,12 +13,15 @@ const jwt = require('jsonwebtoken');
 const app = express()
 
 //
+app.use(timeout('60s'));
+
 app.use(express.json({limit: '90mb'}));
 app.use(express.urlencoded({limit: '90mb', extended: true, parameterLimit: 90000}));
 
 var corsOptions = {
     origin: '*',
-    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+    optionsSuccessStatus: 200,// some legacy browsers (IE11, various SmartTVs) choke on 204
+    credentials: true, 
 }
 app.use(cors(corsOptions));
 

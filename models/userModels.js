@@ -85,10 +85,10 @@ const getAllUser = (_limit, _offset) => { //getByEmail
     return new Promise((resolve, reject) => {
         connection.query(
             `SELECT u.id as idUser, p.id as idPermission,  p.nombre_permiso as rol, u.name, u.last_name, u.dpi, u.email FROM users u
-INNER JOIN user_permission up
-ON u.id = up.iduser
-INNER JOIN permission p 
-ON up.permission_id = p.id LIMIT ? OFFSET ?`, [_limit, _offset], (err, rows) => {
+                INNER JOIN user_permission up
+                ON u.id = up.iduser
+                INNER JOIN permission p 
+                ON up.permission_id = p.id LIMIT ? OFFSET ?`, [_limit, _offset], (err, rows) => {
             if (err) {
                 console.error('Error getting record:', err); // Registro del error en el servidor
                 return reject(new Error('Error getting record')); // Rechazo con un mensaje de error personalizado
@@ -114,7 +114,7 @@ const getCountUser = () => { //getByEmail
 const deleteId = (id) => { //getByEmail
     return new Promise((resolve, reject) => {
         connection.query(
-            `DELETE FROM marcas WHERE idmarca = ${id} ;`, (err, rows) => {
+            `DELETE FROM users WHERE idmarca = ${id};`, (err, rows) => {
                 if (err) {
                     console.error('Error en la consulta a la base de datos:', err); // Registro del error en el servidor
                     return reject(new Error('Error al eliminar la marca')); // Rechazo con un mensaje de error personalizado
@@ -154,15 +154,26 @@ const addPermission = (idUser) => { //getByEmail
     });
 };
 
-const updateDispositivo = (id, count) => { //getByEmail
+const updateRol = (idUser, idRol) => { //getByEmail
     return new Promise((resolve, reject) => {
         connection.query(
-            `update vistas SET visitas = ? where identity = ? `, [count, id], (err, rows) => {
+            "update user_permission SET permission_id= ? where iduser= ? ;", [idRol, idUser], (err, rows) => {
                 if (err) reject(err)
                 resolve(rows)
             });
     });
 };
+
+const updateUser = (_id, _name, _last_name, _age, _phone, _email, _dpi) => { //getByEmail
+    return new Promise((resolve, reject) => {
+        connection.query(
+            "update users SET name=?, last_name=?, age=?, phone=?, email=?, dpi=? where id= ? ;", [_name, _last_name, _age, _phone, _email, _dpi, _id], (err, rows) => {
+                if (err) reject(err)
+                resolve(rows)
+            }); last_name
+    });
+};
+
 module.exports = {
     getUserLogin,
     getAllUser,
@@ -173,5 +184,7 @@ module.exports = {
     getUserByDpi,
     getUserByemail,
     getUserById,
-    getPermission
+    getPermission,
+    updateRol,
+    updateUser
 }

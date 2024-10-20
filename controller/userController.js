@@ -1,6 +1,6 @@
 const express = require('express');
 require('dotenv').config();
-
+const timeout = require('connect-timeout');
 const fs = require('fs');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -50,35 +50,38 @@ isRouter.post('/register', async (req, res) => {
 
 
 isRouter.post('/login', async (req, res) => {
+  if (!req.timedout) {
+    const { user, password } = req.body;
 
-  const { user, password } = req.body;
+    const existingUser = await isController.getUserLogin(user);
 
-  const existingUser = await isController.getUserLogin(user);
-
-  if (existingUser === undefined) {
-    res.json('Error, No Existe usuario')
-  } else {
-    const equals = bcrypt.compareSync(password, existingUser.password);
-    if (equals) {
-
-
-      const token = jwt.sign({
-        idUser: existingUser.id, idpermission: existingUser.idPermission, rol: existingUser.rol, name: existingUser.name, last_name: existingUser.last_name, email: existingUser.email, dpi: existingUser.dpi, phone: existingUser.phone
-      },
-        process.env.JWT_SECRET, {
-        expiresIn: '7h'
-      }
-      );
-
-      return res.status(200).send({
-        msg: 'Logged in!',
-        token,
-        result: true,
-        user: existingUser
-      });
+    if (existingUser === undefined) {
+      res.json('Error, No Existe usuario')
     } else {
-      res.json('Error, Contrasenia incorrecta')
+      const equals = bcrypt.compareSync(password, existingUser.password);
+      if (equals) {
+
+
+        const token = jwt.sign({
+          idUser: existingUser.id, idpermission: existingUser.idPermission, rol: existingUser.rol, name: existingUser.name, last_name: existingUser.last_name, email: existingUser.email, dpi: existingUser.dpi, phone: existingUser.phone
+        },
+          process.env.JWT_SECRET, {
+          expiresIn: '7h'
+        }
+        );
+
+        return res.status(200).send({
+          msg: 'Logged in!',
+          token,
+          result: true,
+          user: existingUser
+        });
+      } else {
+        res.json('Error, Contrasenia incorrecta')
+      }
     }
+  } else {
+    res.status(503).json({ error: 'La solicitud ha caducado' });
   }
 })
 
@@ -114,9 +117,17 @@ isRouter.get('/all', authMiddleware.protect, async (req, res) => {
       }
     }
 
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Error al obtener datos' });
+  }catch (error) {
+    console.error('Error the create account:', error); // Registro del error en el servidor
+    // Si el error es debido a la tabla no existente, capturarlo aquí ER_NON_UNIQ_ERROR
+    if (error.original && error.original.code === 'ER_NO_SUCH_TABLE') {
+      res.status(500).json({ error: 'La tabla "user" no existe en la base de datos.' });
+    } else if (error.original && error.original.code === 'ER_NON_UNIQ_ERROR') {
+      res.status(500).json({ error: 'Error table :  ER_NON_UNIQ_ERROR' });
+    } {
+      // Otros errores de base de datos
+      res.status(500).json({ error: 'Ocurrió un error al actualizar el usuario.' });
+    }
   }
 })
 
@@ -195,6 +206,62 @@ isRouter.get('/permission', authMiddleware.protect, async (req, res) => {
     } {
       // Otros errores de base de datos
       res.status(500).json({ error: 'Ocurrió un error al obtener los datos del usuario.' });
+    }
+  }
+})
+
+isRouter.put('/update-rol', authMiddleware.protect, async (req, res) => {
+  try {
+    const { idUser, idRol } = req.body;
+    const results = await isController.updateRol(idUser, idRol);
+    if (results === undefined) {
+      res.json({
+        error: 'Error, No existe registro!'
+      })
+    } else {
+      return res.status(200).json({
+        msg: 'Successful Update',
+      });
+    }
+
+  } catch (error) {
+    console.error('Error the create account:', error); // Registro del error en el servidor
+    // Si el error es debido a la tabla no existente, capturarlo aquí ER_NON_UNIQ_ERROR
+    if (error.original && error.original.code === 'ER_NO_SUCH_TABLE') {
+      res.status(500).json({ error: 'La tabla "user" no existe en la base de datos.' });
+    } else if (error.original && error.original.code === 'ER_NON_UNIQ_ERROR') {
+      res.status(500).json({ error: 'Error table :  ER_NON_UNIQ_ERROR' });
+    } {
+      // Otros errores de base de datos
+      res.status(500).json({ error: 'Ocurrió un error al actualizar el permiso.' });
+    }
+  }
+})
+
+isRouter.put('/update-user', authMiddleware.protect, async (req, res) => {
+  try {
+    const { idUser, name, last_name, age, phone, email, dpi } = req.body;
+    const results = await isController.updateUser(idUser, name, last_name, age, phone, email, dpi);
+    if (results === undefined) {
+      res.json({
+        error: 'Error, No existe registro!'
+      })
+    } else {
+      return res.status(200).json({
+        msg: 'Successful Update',
+      });
+    }
+
+  } catch (error) {
+    console.error('Error the create account:', error); // Registro del error en el servidor
+    // Si el error es debido a la tabla no existente, capturarlo aquí ER_NON_UNIQ_ERROR
+    if (error.original && error.original.code === 'ER_NO_SUCH_TABLE') {
+      res.status(500).json({ error: 'La tabla "user" no existe en la base de datos.' });
+    } else if (error.original && error.original.code === 'ER_NON_UNIQ_ERROR') {
+      res.status(500).json({ error: 'Error table :  ER_NON_UNIQ_ERROR' });
+    } {
+      // Otros errores de base de datos
+      res.status(500).json({ error: 'Ocurrió un error al actualizar el usuario.' });
     }
   }
 })
