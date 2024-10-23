@@ -8,7 +8,7 @@ const createWebSServer = (server) => {
         console.log('Cliente conectado al WebSocket');
 
         // Recibir mensajes del cliente (coordenadas en tiempo real)
-        ws.on('locations', async (message) => {
+        ws.on('message', async (message) => {
             const { lat, lng, idUser } = JSON.parse(message);
             console.log(`Latitud: ${lat}, Longitud: ${lng}, DeviceID: ${idUser}`);
             const loctionUser = await isController.getLocationId(idUser);
