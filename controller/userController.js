@@ -114,10 +114,10 @@ isRouter.post('/login', async (req, res) => {
 
 
           const token = jwt.sign({
-            idUser: existingUser.id, idpermission: existingUser.idPermission, rol: existingUser.rol, name: existingUser.name, last_name: existingUser.last_name, email: existingUser.email, dpi: existingUser.dpi, phone: existingUser.phone
+            idUser: existingUser.idUser, idpermission: existingUser.idPermission, rol: existingUser.rol, name: existingUser.name, last_name: existingUser.last_name, email: existingUser.email, dpi: existingUser.dpi, phone: existingUser.phone
           },
             process.env.JWT_SECRET, {
-            expiresIn: '1h'
+            expiresIn: '5h'
           }
           );
 
