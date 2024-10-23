@@ -11,7 +11,7 @@ const createWebSServer = (server) => {
         ws.on('locations', async (message) => {
             const { lat, lng, idUser } = JSON.parse(message);
             console.log(`Latitud: ${lat}, Longitud: ${lng}, DeviceID: ${idUser}`);
-           /* const loctionUser = await isController.getLocationId(idUser);
+            const loctionUser = await isController.getLocationId(idUser);
             if (loctionUser === undefined) {
                 const query = 'INSERT INTO locations (idUser, lat, lng, timestamp) VALUES (?, ?, ?, NOW())';
                 db.query(query, [deviceId, latitude, longitude], (err, result) => {
@@ -25,7 +25,7 @@ const createWebSServer = (server) => {
                 } else {
                     console.log('Coordenadas actualizadas.');
                 }
-            } */
+            } 
 
 
         });
