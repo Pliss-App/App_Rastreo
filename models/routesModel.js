@@ -51,7 +51,7 @@ const updateLocation = (lat, lng, idUser) => {
                     console.error('Error getting record:', err); // Registro del error en el servidor
                     return reject(new Error('Error getting record')); // Rechazo con un mensaje de error personalizado
                 }
-                resolve(rows[0]);
+                resolve(rows);
             });
     });
 }
