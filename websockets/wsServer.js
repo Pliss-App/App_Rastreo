@@ -10,7 +10,7 @@ const createWebSServer = (server) => {
             if (results === undefined) {
                 console.log("NO EXISTEN REGISTROS...")
             } else {
-                ws.send(JSON.stringify(results));
+                wss.send(JSON.stringify(results));
             }
         }, 5000);
 
