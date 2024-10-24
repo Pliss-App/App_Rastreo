@@ -7,28 +7,28 @@ const createRoute = (data) => { //getByEmail
             start_direction,
     start_lat,  
     start_lng, 
-     end_direction
+     end_direction,
     end_lat,  
     end_lng,  
     total_distance, 
     total_time, 
-    status) VALUES (?,?,?,?,?,?,?,?,?,?)`, 
-       [data.idUser,
-        data.start_direction,
-        data.start_lat,
-        data.start_lng,
-        data.end_direction,
-        data.end_lat,
-        data.end_lng,
-        data.total_distance,
-        data.total_time, 
-        'Asignado'], (err, rows) => {
-            if (err) {
-                console.error('Error getting record:', err); // Registro del error en el servidor
-                return reject(new Error('Error getting record')); // Rechazo con un mensaje de error personalizado
-            }
-            resolve(rows);
-        });
+    status) VALUES (?,?,?,?,?,?,?,?,?,?)`,
+            [data.idUser,
+            data.start_direction,
+            data.start_lat,
+            data.start_lng,
+            data.end_direction,
+            data.end_lat,
+            data.end_lng,
+            data.total_distance,
+            data.total_time,
+                'Asignado'], (err, rows) => {
+                    if (err) {
+                        console.error('Error getting record:', err); // Registro del error en el servidor
+                        return reject(new Error('Error getting record')); // Rechazo con un mensaje de error personalizado
+                    }
+                    resolve(rows);
+                });
     });
 };
 
