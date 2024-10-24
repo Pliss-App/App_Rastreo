@@ -74,6 +74,19 @@ const getLocationId = (_id) => { //getByEmail
     });
 };
 
+const getRouteId = (_id) => { //getByEmail
+    return new Promise((resolve, reject) => {
+        connection.query(
+            "SELECT * FROM routes WHERE id = ?", [_id], (err, rows) => {
+                if (err) {
+                    console.error('Error getting record:', err); // Registro del error en el servidor
+                    return reject(new Error('Error getting record')); // Rechazo con un mensaje de error personalizado
+                }
+                resolve(rows[0]);
+            });
+    });
+};
+
 const getDevicesAll = (_id) => { //getByEmail
     return new Promise((resolve, reject) => {
         connection.query(
@@ -87,10 +100,43 @@ const getDevicesAll = (_id) => { //getByEmail
     });
 };
 
+const getRouteRolIdUser = (_limit, _offset, _id) => {
+
+    return new Promise((resolve, reject) => {
+        connection.query(
+            "SELECT * FROM routes WHERE idUser = ? LIMIT ? OFFSET ?", [_id, _limit, _offset], (err, rows) => {
+                if (err) {
+                    console.error('Error getting record:', err); // Registro del error en el servidor
+                    return reject(new Error('Error getting record')); // Rechazo con un mensaje de error personalizado
+                }
+                resolve(rows);
+            });
+    });
+};
+
+const getRouteAll = (_limit, _offset,) => {
+    return new Promise((resolve, reject) => {
+        connection.query(
+            `SELECT us.name, us.last_name, r.* FROM routes r
+            INNER JOIN users us
+            ON r.idUser = us.id LIMIT ? OFFSET ?`, 
+        [_limit, _offset], (err, rows) => {
+            if (err) {
+                console.error('Error getting record:', err); // Registro del error en el servidor
+                return reject(new Error('Error getting record')); // Rechazo con un mensaje de error personalizado
+            }
+            resolve(rows);
+        });
+    });
+};
+
 module.exports = {
     createRoute,
     getLocationId,
     updateLocation,
     insertLocation,
-    getDevicesAll
+    getDevicesAll,
+    getRouteRolIdUser,
+    getRouteAll,
+    getRouteId
 }

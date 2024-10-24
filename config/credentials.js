@@ -5,6 +5,7 @@ module.exports = {
          user: process.env.DB_USER || "u420603702_adminrastreoap",
          password: process.env.DB_PASSWORD || "JJ41UBlV3?6b",
          database: process.env.DB_DATABASE || "u420603702_apprastreo",
+         waitForConnections: true
      } 
  
     /* hostname: 'localhost',
