@@ -265,6 +265,86 @@ isRouter.get('/all', authMiddleware.protect, async (req, res) => {
 })
 
 
+isRouter.get('/getUserRoute', authMiddleware.protect, async (req, res) => {
+  try {
+    const _page = parseInt(req.query.page) || 1; 
+    const _limit = parseInt(req.query.limit) || 10; 
+    const _offset = (_page - 1) * _limit; 
+
+    const results = await isController.getAllUserRoute(_limit, _offset);
+    if (results === undefined) {
+      res.json({
+        error: 'Error, Datos no encontrados'
+      })
+    } else {
+
+      const countRows = await isController.getCountUser();
+      if (countRows === undefined) {
+        res.json({
+          error: 'Error, durante conteo de registros.'
+        })
+      } else {
+
+        const totalUsers = countRows.total;
+        const totalPages = Math.ceil(totalUsers / _limit);
+        return res.status(200).json({
+          results: results,
+          currentPage: _page,
+          totalPages: totalPages,
+          totalUsers: totalUsers
+        });
+      }
+    }
+
+  } catch (error) {
+    console.error('Error al obtener los roles:', error);  // Verificamos el código de error
+
+    // Manejo de errores según el código
+    switch (error.code) {
+      case 'ER_NO_SUCH_TABLE':
+
+        return res.status(400).json({
+          error: error.sqlMessage
+        });
+      case 'ER_DUP_ENTRY':
+        // Error de entrada duplicada (ej. DPI o email ya existen en la base de datos)
+        console.error('DPI o correo electrónico ya existe.');
+        return res.status(400).json({
+          error: error.sqlMessage
+        });
+
+      case 'ER_BAD_FIELD_ERROR':
+        // Error de campo incorrecto (cuando un campo de la consulta no existe en la base de datos)
+        console.error('Campo no válido en la consulta.');
+        return res.status(400).json({
+          error: 'Error en la solicitud: el campo proporcionado no es válido.'
+        });
+
+      case 'ER_NO_REFERENCED_ROW':
+      case 'ER_ROW_IS_REFERENCED':
+        // Error de violación de llave foránea (cuando estás eliminando o insertando un valor que tiene dependencias)
+        console.error('Violación de llave foránea.');
+        return res.status(409).json({
+          error: 'No puedes realizar esta acción porque hay registros relacionados en otra tabla.'
+        });
+
+      case 'ER_DATA_TOO_LONG':
+        // Error de longitud de dato (cuando intentas insertar un valor que excede la longitud permitida)
+        console.error('Dato demasiado largo para uno de los campos.');
+        return res.status(400).json({
+          error: 'Uno de los campos supera la longitud permitida.'
+        });
+
+      default:
+        // Cualquier otro error no manejado específicamente
+        console.error('Error inesperado:', error);
+        return res.status(500).json({
+          error: 'Ocurrió un error inesperado al actualizar la cuenta.'
+        });
+    }
+  }
+})
+
 isRouter.get('/validate-dpi', async (req, res) => {
   try {
 

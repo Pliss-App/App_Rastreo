@@ -60,6 +60,20 @@ const updateLocation = (lat, lng, idUser) => {
     });
 }
 
+const updateStatusRoute = (status, idUser, idRoute) => {
+    return new Promise((resolve, reject) => {
+        connection.query(
+            "update routes set status=? WHERE idUser= ? AND id=?", [status, idUser, idRoute], (err, rows) => {
+                if (err) {
+                    console.error('Error getting record:', err); // Registro del error en el servidor
+                    return reject(new Error('Error getting record')); // Rechazo con un mensaje de error personalizado
+                }
+                resolve(rows);
+            });
+    });
+}
+
+
 
 const getLocationId = (_id) => { //getByEmail
     return new Promise((resolve, reject) => {
@@ -138,5 +152,6 @@ module.exports = {
     getDevicesAll,
     getRouteRolIdUser,
     getRouteAll,
-    getRouteId
+    getRouteId,
+    updateStatusRoute
 }

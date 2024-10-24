@@ -98,6 +98,31 @@ const getAllUser = (_limit, _offset, _rol) => { //getByEmail
     });
 };
 
+const getAllUserRoute = (_limit, _offset) => { //getByEmail
+    return new Promise((resolve, reject) => {
+        connection.query(
+            `SELECT us.id as idUser, us.name, us.last_name, count(ro.idUser) as routes,   
+    SUM(CASE WHEN ro.status = 'ASIGNADO' THEN 1 ELSE 0 END) AS assigned,
+    SUM(CASE WHEN ro.status = 'EN RUTA' THEN 1 ELSE 0 END) AS in_route, 
+    SUM(CASE WHEN ro.status = 'FINALIZADO' THEN 1 ELSE 0 END) AS completed
+    FROM users us
+    INNER JOIN routes ro
+    ON us.id = ro.idUser
+    INNER JOIN user_permission up
+    ON us.id = up.iduser
+    INNER JOIN permission p 
+    ON up.permission_id = p.id WHERE p.nombre_permiso='cliente'
+    group by us.id ORDER BY us.name LIMIT ? OFFSET ?`,
+    [ _limit, _offset], (err, rows) => {
+            if (err) {
+                console.error('Error getting record:', err); // Registro del error en el servidor
+                return reject(new Error('Error getting record')); // Rechazo con un mensaje de error personalizado
+            }
+            resolve(rows);
+        });
+    });
+};
+
 const getCountUser = () => { //getByEmail
     return new Promise((resolve, reject) => {
         connection.query(
@@ -223,5 +248,6 @@ module.exports = {
     deleteUserId,
     updateTokeResetPasswordUser ,
     resetPasswordUser,
-    updatePasswordUser
+    updatePasswordUser,
+    getAllUserRoute
 }
