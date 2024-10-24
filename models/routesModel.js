@@ -9,13 +9,16 @@ const createRoute = (data) => { //getByEmail
     end_lat,  
     end_lng,  
     total_distance, 
-    total_time) VALUES (?,?,?,?,?,?,?)`, [data.idUser,
+    total_time, 
+    status) VALUES (?,?,?,?,?,?,?, ?)`, 
+       [data.idUser,
         data.start_lat,
         data.start_lng,
         data.end_lat,
         data.end_lng,
         data.total_distance,
-        data.total_time], (err, rows) => {
+        data.total_time, 
+        'Asignado'], (err, rows) => {
             if (err) {
                 console.error('Error getting record:', err); // Registro del error en el servidor
                 return reject(new Error('Error getting record')); // Rechazo con un mensaje de error personalizado
@@ -29,7 +32,7 @@ const createRoute = (data) => { //getByEmail
 const insertLocation = (lat, lng, idUser) => {
     return new Promise((resolve, reject) => {
         connection.query(
-            'INSERT INTO locations (idUser, lat, lng, timestamp) VALUES (?, ?, ?, NOW())', [ idUser, lat, lng], (err, rows) => {
+            'INSERT INTO locations (idUser, lat, lng, timestamp) VALUES (?, ?, ?, NOW())', [idUser, lat, lng], (err, rows) => {
                 if (err) {
                     console.error('Error getting record:', err); // Registro del error en el servidor
                     return reject(new Error('Error getting record')); // Rechazo con un mensaje de error personalizado
@@ -84,6 +87,6 @@ module.exports = {
     createRoute,
     getLocationId,
     updateLocation,
-    insertLocation ,
-    getDevicesAll 
+    insertLocation,
+    getDevicesAll
 }
