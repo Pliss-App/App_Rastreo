@@ -6,19 +6,22 @@ const isRouter = express.Router();
 
 const isController = require('../models/routesModel');
 
-isRouter.get('/list', authMiddleware.protect, async (req, res) => {
+isRouter.get('/allDevices', authMiddleware.protect, async (req, res) => {
     try {
 
-        const results = await isController.getMenuDrawer();
+        const results = await isController.getDevicesAll();
         if (results === undefined) {
             res.json({
                 error: 'Error, No existen registros!'
             })
         } else {
-            return res.status(200).json({
+
+            res.json(results);
+
+          /*  return res.status(200).json({
                 msg: 'Success',
                 result: results
-            });
+            }); */
         }
 
     } catch (error) {

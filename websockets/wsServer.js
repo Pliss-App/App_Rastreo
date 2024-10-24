@@ -5,27 +5,29 @@ const createWebSServer = (server) => {
     const wss = new WebSocket.Server({ server });
 
     wss.on('connection', (ws) => {
-        console.log('Cliente conectado al WebSocket');
+        setInterval(async () => {
+            const results = await isController.getDevicesAll();
+            if (results === undefined) {
+                console.log("NO EXISTEN REGISTROS...")
+            } else {
+                ws.send(JSON.stringify(results));
+            }
+        }, 5000);
 
         // Recibir mensajes del cliente (coordenadas en tiempo real)
         ws.on('message', async (message) => {
             const { lat, lng, idUser } = JSON.parse(message);
-            console.log(`Latitud: ${lat}, Longitud: ${lng}, DeviceID: ${idUser}`);
             const loctionUser = await isController.getLocationId(idUser);
             if (loctionUser === undefined) {
-                const query = 'INSERT INTO locations (idUser, lat, lng, timestamp) VALUES (?, ?, ?, NOW())';
-                db.query(query, [deviceId, latitude, longitude], (err, result) => {
-                    if (err) throw err;
-                    console.log('Coordenadas almacenadas');
-                });
+                const insert = await isController.insertLocation(lat, lng, idUser);
             } else {
                 const updateLocation = await isController.updateLocation(lat, lng, idUser);
-                if (loctionUser === undefined) {
+                if (updateLocation === undefined) {
                     console.log('Error al Actualizar las coordenadas');
                 } else {
                     console.log('Coordenadas actualizadas.');
                 }
-            } 
+            }
 
 
         });

@@ -26,6 +26,20 @@ const createRoute = (data) => { //getByEmail
 };
 
 
+const insertLocation = (lat, lng, idUser) => {
+    return new Promise((resolve, reject) => {
+        connection.query(
+            'INSERT INTO locations (idUser, lat, lng, timestamp) VALUES (?, ?, ?, NOW())', [ idUser, lat, lng], (err, rows) => {
+                if (err) {
+                    console.error('Error getting record:', err); // Registro del error en el servidor
+                    return reject(new Error('Error getting record')); // Rechazo con un mensaje de error personalizado
+                }
+                resolve(rows);
+            });
+    });
+}
+
+
 const updateLocation = (lat, lng, idUser) => {
     return new Promise((resolve, reject) => {
         connection.query(
@@ -53,8 +67,23 @@ const getLocationId = (_id) => { //getByEmail
     });
 };
 
+const getDevicesAll = (_id) => { //getByEmail
+    return new Promise((resolve, reject) => {
+        connection.query(
+            "SELECT * FROM locations WHERE 1", (err, rows) => {
+                if (err) {
+                    console.error('Error getting record:', err); // Registro del error en el servidor
+                    return reject(new Error('Error getting record')); // Rechazo con un mensaje de error personalizado
+                }
+                resolve(rows);
+            });
+    });
+};
+
 module.exports = {
     createRoute,
     getLocationId,
-    updateLocation
+    updateLocation,
+    insertLocation ,
+    getDevicesAll 
 }
