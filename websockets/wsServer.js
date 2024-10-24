@@ -25,10 +25,8 @@ const createWebSServer = (server) => {
 
                     if (updateLocation === undefined) {
                         console.log('Error al Actualizar las coordenadas');
-                    } else {
-                        console.log('Coordenadas actualizadas.');
-                    }
-                }, 3000);
+                    } 
+                }, 6000);
             }
         });
 

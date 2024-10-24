@@ -4,16 +4,20 @@ const createRoute = (data) => { //getByEmail
     return new Promise((resolve, reject) => {
         connection.query(
             `INSERT INTO routes (idUser, 
+            start_direction,
     start_lat,  
     start_lng, 
+     end_direction
     end_lat,  
     end_lng,  
     total_distance, 
     total_time, 
-    status) VALUES (?,?,?,?,?,?,?, ?)`, 
+    status) VALUES (?,?,?,?,?,?,?,?,?,?)`, 
        [data.idUser,
+        data.start_direction,
         data.start_lat,
         data.start_lng,
+        data.end_direction,
         data.end_lat,
         data.end_lng,
         data.total_distance,
