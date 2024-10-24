@@ -14,22 +14,21 @@ const createWebSServer = (server) => {
             }
         }, 5000);
 
-        // Recibir mensajes del cliente (coordenadas en tiempo real)
         ws.on('message', async (message) => {
             const { lat, lng, idUser } = JSON.parse(message);
             const loctionUser = await isController.getLocationId(idUser);
             if (loctionUser === undefined) {
                 const insert = await isController.insertLocation(lat, lng, idUser);
             } else {
-                const updateLocation = await isController.updateLocation(lat, lng, idUser);
+                setInterval(async () => {
+                    const updateLocation = await isController.updateLocation(lat, lng, idUser);
+                }, 3000);
                 if (updateLocation === undefined) {
                     console.log('Error al Actualizar las coordenadas');
                 } else {
                     console.log('Coordenadas actualizadas.');
                 }
             }
-
-
         });
 
         ws.on('close', () => {
