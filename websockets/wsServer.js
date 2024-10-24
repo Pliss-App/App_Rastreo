@@ -22,12 +22,13 @@ const createWebSServer = (server) => {
             } else {
                 setInterval(async () => {
                     const updateLocation = await isController.updateLocation(lat, lng, idUser);
+
+                    if (updateLocation === undefined) {
+                        console.log('Error al Actualizar las coordenadas');
+                    } else {
+                        console.log('Coordenadas actualizadas.');
+                    }
                 }, 3000);
-                if (updateLocation === undefined) {
-                    console.log('Error al Actualizar las coordenadas');
-                } else {
-                    console.log('Coordenadas actualizadas.');
-                }
             }
         });
 
