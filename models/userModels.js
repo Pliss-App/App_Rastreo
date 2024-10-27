@@ -106,7 +106,7 @@ const getAllUserRoute = (_limit, _offset) => { //getByEmail
     SUM(CASE WHEN ro.status = 'EN RUTA' THEN 1 ELSE 0 END) AS in_route, 
     SUM(CASE WHEN ro.status = 'FINALIZADO' THEN 1 ELSE 0 END) AS completed
     FROM users us
-    INNER JOIN routes ro
+    LEFT JOIN routes ro
     ON us.id = ro.idUser
     INNER JOIN user_permission up
     ON us.id = up.iduser
